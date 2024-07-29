@@ -5,7 +5,8 @@ python:
   packages:
     - asgi-proxy-lib 
 docker:
-  cuda_version: "11.7"
+  cuda_version: "11.7.1"
   system_packages:
     - unzip
-  setup_script: "./setup.sh"
+    - git
+  setup_script: "./setup-docker.sh"

@@ -52,6 +52,14 @@ app = asgi_proxy("http://127.0.0.1:8000")
 )
 @bentoml.mount_asgi_app(app, path="/")
 class Tabby:
+    @bentoml.on_deployment
+    def prepare():
+        download_tabby_dir("tabby-local")
+
+    @bentoml.on_shutdown
+    def shutdown(self):
+        upload_tabby_dir("tabby-local")
+
     def __init__(self) -> None:
         model_id = "StarCoder-1B"
         chat_model_id = "Qwen2-1.5B-Instruct"
@@ -61,3 +69,19 @@ class Tabby:
 
         # Wait for the server to be ready.
         self.server.wait_until_ready()
+
+
+def download_tabby_dir(username: str) -> None:
+    """Download the tabby directory for the given user."""
+    if os.system(f"rclone sync r2:/tabby-cloud-managed/users/{username} ~/.tabby") == 0:
+        print("Tabby directory downloaded successfully.")
+    else:
+        raise RuntimeError("Failed to download tabby directory")
+
+
+def upload_tabby_dir(username: str) -> None:
+    """Upload the tabby directory for the given user."""
+    if os.system(f"rclone sync ~/.tabby r2:/tabby-cloud-managed/users/{username}") == 0:
+        print("Tabby directory uploaded successfully.")
+    else:
+        raise RuntimeError("Failed to upload tabby directory")
