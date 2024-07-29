@@ -8,6 +8,7 @@ import bentoml
 import socket
 import subprocess
 
+
 class TabbyServer:
     def __init__(self, model_id: str, chat_model_id: str) -> None:
         self.launcher = subprocess.Popen(
@@ -24,7 +25,7 @@ class TabbyServer:
                 "8000",
             ]
         )
-    
+
     def ready(self) -> bool:
         try:
             socket.create_connection(("127.0.0.1", 8000), timeout=1).close()
@@ -36,12 +37,14 @@ class TabbyServer:
             if retcode is not None:
                 raise RuntimeError(f"launcher exited unexpectedly with code {retcode}")
             return False
-    
+
     def wait_until_ready(self) -> None:
         while not self.ready():
             time.sleep(1.0)
 
+
 app = asgi_proxy("http://127.0.0.1:8000")
+
 
 @bentoml.service(
     resources={"gpu": 1, "gpu_type": "nvidia-l4"},
