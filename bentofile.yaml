@@ -1,0 +1,11 @@
+service: 'service:Tabby'
+include:
+  - '*.py'
+python:
+  packages:
+    - asgi-proxy-lib 
+docker:
+  cuda_version: "11.7"
+  system_packages:
+    - unzip
+  setup_script: "./setup.sh"
